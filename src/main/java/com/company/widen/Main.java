@@ -24,7 +24,8 @@ class MrRobot {
     private int ignoredBreakpoints = 0;
     private List<String> breakPoints = Arrays.asList(" ", ",", "/", "(", ")", ".");
     private int startPosition = 0;
-    private int currentPosition = 0;
+    private int endPosition = 0;
+    private int initialPosition = 0;
 
     public static void main(String[] args) throws AWTException {
         new MrRobot();
@@ -52,31 +53,44 @@ class MrRobot {
 
     private void widen() {
         int lineLength = lineContext.length();
-        currentPosition = lineLength - startingPositionContext.length();
+        initialPosition = lineLength - startingPositionContext.length();
         List<String> chars = Arrays.asList(lineContext.split(""));
 
         System.out.println("chars = " + chars);
 
+        endPosition = calculateEndPosition(lineLength, chars);
+
+        calculateStartPosition(chars);
+
+        widenCount++;
+        selectThisShit(startPosition, endPosition);
+    }
+
+    private int calculateEndPosition(int lineLength, List<String> chars) {
         int end = lineLength;
-        for (int i = currentPosition; i < lineLength; i++) {
+        for (int i = initialPosition; i < lineLength; i++) {
             String s = chars.get(i);
-            if (breakPoints.contains(s) && widenCount >= ignoredBreakpoints) {
+            if (breakPoints.contains(s) && shouldEndHere()) {
                 end = i;
                 ignoredBreakpoints++;
                 break;
             }
         }
+        return end;
+    }
 
-        for (int k = currentPosition; k >= 0; k--) {
+    private void calculateStartPosition(List<String> chars) {
+        for (int k = initialPosition; k >= 0; k--) {
             String s = chars.get(k);
             if (breakPoints.contains(s)) {
                 startPosition = k + 1;
                 break;
             }
         }
+    }
 
-        widenCount++;
-        selectThisShit(startPosition, end);
+    private boolean shouldEndHere() {
+        return widenCount >= ignoredBreakpoints;
     }
 
     private void selectThisShit(int start, int end) {
