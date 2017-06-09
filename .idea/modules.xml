@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/widen.iml" filepath="$PROJECT_DIR$/.idea/modules/widen.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/widen_main.iml" filepath="$PROJECT_DIR$/.idea/modules/widen_main.iml" group="widen" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/widen_test.iml" filepath="$PROJECT_DIR$/.idea/modules/widen_test.iml" group="widen" />
+    </modules>
+  </component>
+</project>
