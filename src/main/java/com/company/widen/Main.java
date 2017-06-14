@@ -11,27 +11,27 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws AWTException {
-        new MrRobot();
+        new MisterRobot();
     }
 }
 
 
-class MrRobot {
+class MisterRobot {
     private final String lineContext;
     private final String startingPositionContext;
     private Robot robot = new Robot();
-    private int widenCount = 0;
-    private int ignoredBreakpoints = 0;
-    private List<String> breakPoints = Arrays.asList(" ", ",", "/", "(", ")", ".");
+//    private List<String> breakPoints = Arrays.asList(" ", ",", "/", "(", ")", ".");
+    private List<String> breakPoints = Arrays.asList("/");
     private int startPosition = 0;
     private int endPosition = 0;
     private int initialPosition = 0;
+    private int widenInvokeCount = 0;
 
     public static void main(String[] args) throws AWTException {
-        new MrRobot();
+        new MisterRobot();
     }
 
-    MrRobot() throws AWTException {
+    MisterRobot() throws AWTException {
         setupRobot();
         selectEnd();
         this.startingPositionContext = copySelection();
@@ -41,12 +41,13 @@ class MrRobot {
         this.lineContext = copySelection();
         left();
         widen();
+        widen();
 
         System.exit(0);
     }
 
     private void setupRobot() {
-        robot.setAutoDelay(1);
+        robot.setAutoDelay(0);
         robot.setAutoWaitForIdle(true);
         robot.delay(2000);
     }
@@ -56,27 +57,28 @@ class MrRobot {
         initialPosition = lineLength - startingPositionContext.length();
         List<String> chars = Arrays.asList(lineContext.split(""));
 
-        System.out.println("chars = " + chars);
-
-        endPosition = calculateEndPosition(lineLength, chars);
-
+        calculateEndPosition(chars);
         calculateStartPosition(chars);
 
-        widenCount++;
+        System.out.println("startPosition, endPosition = " + startPosition + ", " + endPosition);
         selectThisShit(startPosition, endPosition);
+        widenInvokeCount++;
     }
 
-    private int calculateEndPosition(int lineLength, List<String> chars) {
-        int end = lineLength;
-        for (int i = initialPosition; i < lineLength; i++) {
+    private void calculateEndPosition(List<String> chars) {
+        int end = chars.size();
+        int encounteredBreakpoints = 0;
+        for (int i = initialPosition; i < chars.size(); i++) {
             String s = chars.get(i);
-            if (breakPoints.contains(s) && shouldEndHere()) {
+
+            if(widenInvokeCount == encounteredBreakpoints && breakPoints.contains(s)) {
                 end = i;
-                ignoredBreakpoints++;
                 break;
             }
+
+            if (breakPoints.contains(s)) encounteredBreakpoints++;
         }
-        return end;
+        endPosition = end;
     }
 
     private void calculateStartPosition(List<String> chars) {
@@ -89,11 +91,8 @@ class MrRobot {
         }
     }
 
-    private boolean shouldEndHere() {
-        return widenCount >= ignoredBreakpoints;
-    }
-
     private void selectThisShit(int start, int end) {
+        startOfLine();
         for (int i = 0; i < start; i++) right();
 
         robot.keyPress(KeyEvent.VK_SHIFT);
@@ -136,6 +135,13 @@ class MrRobot {
     private void left() {
         robot.keyPress(KeyEvent.VK_LEFT);
         robot.keyRelease(KeyEvent.VK_LEFT);
+    }
+
+    private void startOfLine() {
+        robot.keyPress(KeyEvent.VK_END);
+        robot.keyRelease(KeyEvent.VK_END);
+        robot.keyPress(KeyEvent.VK_HOME);
+        robot.keyRelease(KeyEvent.VK_HOME);
     }
 
 }
