@@ -75,7 +75,6 @@ public class NativeRobot implements NativeKeyListener {
                 end = i;
                 break;
             }
-
             if (breakPoints.contains(s)) encounteredBreakpoints++;
         }
         endPosition = end;
@@ -189,6 +188,7 @@ public class NativeRobot implements NativeKeyListener {
     private void registerNativeHook() {
         try {
             GlobalScreen.registerNativeHook();
+            GlobalScreen.setEventDispatcher(new MyAbstractExecutorService());
             GlobalScreen.addNativeKeyListener(this);
 
             LogManager.getLogManager().reset();
